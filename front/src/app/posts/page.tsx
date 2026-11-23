@@ -1,6 +1,10 @@
 "use client"; // 서버 컴포넌트에서 클라이언트 컴포넌트로 수정 
+import type { PostDto } from "@/type/post";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+
+const NEXT_PUBLIC_API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
 // http://localhost:3000/posts
 // 함수 이름은 상관없다. 폴더 명이 루트가 되고, 그 안의 page.tsx 속 함수가 불려나와 페이지를 만든다
 export default function Page(){
@@ -8,11 +12,11 @@ export default function Page(){
   // useState : 값이 바뀌면 화면을 다시 그려주는, 상자를 만드는 함수
   // ([]) : 처음 값은 빈 배열로 시작 
   // < { id : Number; title:string}[] > : typescript에서 type. 이 상자에 들어갈 수 있는 type를 정한다. 
-  const [posts, setPosts] = useState<{ [key: string]: any }[]>([]);
+  const [posts, setPosts] = useState<PostDto[]>([]);
 
   // 화면이 처음 뜬 다음 할 일 : 가짜 데이터 넣기 
   useEffect(() => {
-    fetch("http://localhost:8080/api/v1/posts")
+    fetch(`${NEXT_PUBLIC_API_BASE_URL}/api/v1/posts`)
       .then((res) => res.json())
       .then(setPosts);
   }, []);
