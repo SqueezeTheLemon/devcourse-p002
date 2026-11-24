@@ -12,7 +12,7 @@ export default function Page(){
   // useState : 값이 바뀌면 화면을 다시 그려주는, 상자를 만드는 함수
   // ([]) : 처음 값은 빈 배열로 시작 
   // < { id : Number; title:string}[] > : typescript에서 type. 이 상자에 들어갈 수 있는 type를 정한다. 
-  const [posts, setPosts] = useState<PostDto[]>([]);
+  const [posts, setPosts] = useState<PostDto[] | null>(null);
 
   // 화면이 처음 뜬 다음 할 일 : 가짜 데이터 넣기 
   useEffect(() => {
@@ -20,18 +20,23 @@ export default function Page(){
       .then(setPosts);
   }, []);
 
+  if(posts == null) return <div>로딩중...</div>;
+
   return (
     <>
       <h1>글 목록</h1>
 
-      {posts.length == 0 && <div>로딩중...</div>}
+      {posts.length > 0 && (
+        <ul>
+          {posts.map((post) => (
+            <li key={post.id}>
+              <Link href={`/posts/${post.id}`}>{post.title}</Link>
+            </li>
+          ))}
+        </ul>
+      )}
 
-      <ul>
-        {posts.map((post) => (
-          <li key={post.id}>
-            <Link href = {`/posts/${post.id}`}> {post.title}</Link></li>
-        ))}
-      </ul>
+      
       <div>
         <Link href="/posts/write"> 글쓰기 </Link>
       </div>
