@@ -1,9 +1,9 @@
 "use client"; // 서버 컴포넌트에서 클라이언트 컴포넌트로 수정 
+
+import { apiFetch } from "@/lib/backend/client";
 import type { PostDto } from "@/type/post";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-
-const NEXT_PUBLIC_API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 // http://localhost:3000/posts
 // 함수 이름은 상관없다. 폴더 명이 루트가 되고, 그 안의 page.tsx 속 함수가 불려나와 페이지를 만든다
@@ -16,8 +16,7 @@ export default function Page(){
 
   // 화면이 처음 뜬 다음 할 일 : 가짜 데이터 넣기 
   useEffect(() => {
-    fetch(`${NEXT_PUBLIC_API_BASE_URL}/api/v1/posts`)
-      .then((res) => res.json())
+    apiFetch(`/api/v1/posts`)
       .then(setPosts);
   }, []);
 
@@ -33,6 +32,9 @@ export default function Page(){
             <Link href = {`/posts/${post.id}`}> {post.title}</Link></li>
         ))}
       </ul>
+      <div>
+        <Link href="/posts/write"> 글쓰기 </Link>
+      </div>
     </>
   );
 
