@@ -28,10 +28,46 @@ export default function Page() {
     }).then((data) => {
       alert(data.msg);
 
-      if(postComments == null) return;
-      setPostComments(postComments.filter((c) => c.id != commentId))
+      if(postComments == null) return; // 댓글 삭제 요청이 성공하면 
+      setPostComments(postComments.filter((c) => c.id != commentId)) // postComments 상태를 변경 (UI에서도 댓글 삭제)
     });
   };
+
+  const handleCommentWriteFormSubmit = (
+    e: React.SyntheticEvent<HTMLFormElement>
+  ) => {
+    e.preventDefault();
+
+    const form = e.currentTarget;
+
+    const contentTextarea = form.elements.namedItem(
+      "content"
+    ) as HTMLTextAreaElement;
+
+    contentTextarea.value = contentTextarea.value.trim();
+
+    if (contentTextarea.value.length === 0) {
+      alert("댓글 내용을 입력해주세요.");
+      contentTextarea.focus();
+
+      return;
+    }
+
+    apiFetch(`/api/v1/posts/${id}/comments`, {
+      method: "POST",
+      body: JSON.stringify({
+        content: contentTextarea.value,
+      }),
+    }).then((data) => {
+      alert(data.msg);
+
+      contentTextarea.value = "";
+      if (postComments == null) return;
+
+      setPostComments([...postComments, data.data]);
+    });
+  };
+
 
   useEffect(() => {
     apiFetch(`/api/v1/posts/${id}`)
@@ -39,6 +75,7 @@ export default function Page() {
     apiFetch(`/api/v1/posts/${id}/comments`)
       .then(setPostComments);
   }, [id]);
+
 
 
   if (post == null) return <div>로딩중...</div>;
@@ -65,6 +102,20 @@ export default function Page() {
       </div>
 
     <hr className="my-2" />
+      <h2>댓글 작성</h2>
+
+      <form className="flex gap-2" onSubmit={handleCommentWriteFormSubmit}>
+        <textarea
+          className="border p-2 rounded"
+          name="content"
+          placeholder="댓글 내용"
+        />
+        <button className="p-2 rounded border" type="submit">
+          작성
+        </button>
+      </form>
+
+      <hr className="my-2" />
 
       <h2>댓글 목록</h2>
 
